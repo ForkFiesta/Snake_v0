@@ -28,8 +28,8 @@ print_step() {
 
 # Set up proper permissions
 print_step "Setting up permissions..."
-sudo chown -R node:node /workspace
-sudo chown -R node:node /home/node
+sudo chown -R node:node /workspace || true
+sudo chown -R node:node /home/node || true
 
 # Create basic directory structure if it doesn't exist
 print_step "Creating directory structure..."
@@ -42,13 +42,6 @@ print_step "Configuring git..."
 git config --global --add safe.directory /workspace
 git config --global user.name "Dev Container User" || true
 git config --global user.email "dev@example.com" || true
-
-# Install global tools if not already installed
-print_step "Checking global tools..."
-if ! command -v supabase &> /dev/null; then
-    print_status "Installing Supabase CLI..."
-    npm install -g supabase || print_warning "Failed to install Supabase CLI"
-fi
 
 print_status "Development environment setup complete! 🚀"
 print_status "You can now start developing your Snake Web App."

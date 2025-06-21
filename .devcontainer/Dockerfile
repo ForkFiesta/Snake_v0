@@ -1,5 +1,5 @@
 # Use the official Node.js image as base
-ARG VARIANT="18-bullseye"
+ARG VARIANT="20-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-${VARIANT}
 
 # Install additional OS packages for game development and testing
@@ -52,8 +52,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 # Install global npm packages for development
 RUN npm install -g \
-    # Next.js CLI
-    create-next-app@latest \
     # Package managers
     yarn \
     pnpm \
@@ -61,27 +59,9 @@ RUN npm install -g \
     nodemon \
     concurrently \
     cross-env \
-    # Testing tools
-    jest-cli \
-    @playwright/test \
-    # Linting and formatting
-    eslint \
-    prettier \
-    # Build tools
-    webpack-cli \
-    # Database tools
-    prisma \
-    # Supabase CLI
-    supabase \
-    # Deployment tools
-    vercel \
-    # Performance monitoring
-    clinic \
     # Code quality
     typescript \
     ts-node \
-    # Game development specific
-    canvas \
     # Utility tools
     serve \
     http-server
@@ -163,9 +143,6 @@ RUN echo 'function nuke_modules() { rm -rf node_modules package-lock.json && npm
     && echo 'function fresh_start() { nuke_modules && npm run dev; }' >> /home/node/.bashrc \
     && echo 'function test_all() { npm run lint && npm run type-check && npm run test && npm run build; }' >> /home/node/.bashrc \
     && echo 'function game_dev() { echo "🎮 Starting Snake Game Development Environment..."; npm run dev; }' >> /home/node/.bashrc
-
-# Set up git hooks directory
-RUN mkdir -p /workspace/.git/hooks
 
 # Default command
 CMD ["sleep", "infinity"] 

@@ -9,7 +9,7 @@
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
-      "version": "18"
+      "version": "20"
     },
     "ghcr.io/devcontainers/features/git:1": {
       "ppa": true,
@@ -243,7 +243,7 @@
   "postCreateCommand": "bash .devcontainer/setup.sh",
 
   // Post-start command to start services
-  "postStartCommand": "npm install && npm run dev",
+  // "postStartCommand": "npm install && npm run dev",
 
   // Environment variables
   "containerEnv": {
