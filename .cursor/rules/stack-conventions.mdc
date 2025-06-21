@@ -1,0 +1,586 @@
+# Stack Conventions - Snake Web App
+
+## Stack Choices
+
+### Core Technologies
+- **Framework**: Next.js 14+ with App Router
+- **Language**: TypeScript (strict mode enabled)
+- **Styling**: Tailwind CSS with custom design system
+- **State Management**: Zustand for client-side state
+- **Animation**: Framer Motion for UI animations
+- **Game Rendering**: HTML5 Canvas API
+- **Audio**: Web Audio API
+- **Database**: Supabase (PostgreSQL)
+- **Deployment**: Vercel with edge functions
+
+### Development Tools
+- **Package Manager**: npm (use `npm ci` for consistent installs)
+- **Linting**: ESLint with TypeScript and React rules
+- **Formatting**: Prettier with consistent configuration
+- **Testing**: Jest + React Testing Library + Playwright
+- **Type Checking**: TypeScript strict mode
+- **Git Hooks**: Husky for pre-commit checks
+
+## Coding Standards
+
+### TypeScript Guidelines
+
+#### Type Definitions
+```typescript
+// ✅ Good - Explicit interface definitions
+interface GameState {
+  readonly gameStatus: 'idle' | 'playing' | 'paused' | 'gameOver'
+  readonly score: number
+  readonly highScore: number
+  readonly snake: readonly Position[]
+}
+
+// ✅ Good - Use const assertions for immutable data
+const GAME_MODES = ['classic', 'timed', 'survival', 'zen'] as const
+type GameMode = typeof GAME_MODES[number]
+
+// ❌ Avoid - Any types
+const gameData: any = {}
+
+// ❌ Avoid - Implicit any
+function processScore(score) { }
+```
+
+#### Function Declarations
+```typescript
+// ✅ Good - Explicit return types for public functions
+export function calculateScore(foodEaten: number, timeBonus: number): number {
+  return foodEaten * 10 + timeBonus
+}
+
+// ✅ Good - Use arrow functions for callbacks and short functions
+const handleKeyPress = (event: KeyboardEvent): void => {
+  // Handle key press logic
+}
+
+// ✅ Good - Generic type constraints
+function createGameStore<T extends GameState>(initialState: T): Store<T> {
+  return create(() => initialState)
+}
+```
+
+### React Component Standards
+
+#### Component Structure
+```typescript
+// ✅ Good - Functional component with proper typing
+interface GameBoardProps {
+  width: number
+  height: number
+  onGameOver: (score: number) => void
+  className?: string
+}
+
+export function GameBoard({ width, height, onGameOver, className }: GameBoardProps) {
+  // Hooks at the top
+  const [gameState, setGameState] = useState<GameState>(initialState)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  
+  // Effects after hooks
+  useEffect(() => {
+    // Effect logic
+  }, [])
+  
+  // Event handlers
+  const handleGameEnd = useCallback((score: number) => {
+    onGameOver(score)
+  }, [onGameOver])
+  
+  // Early returns for loading/error states
+  if (!gameState) {
+    return <GameSkeleton />
+  }
+  
+  // Main render
+  return (
+    <div className={cn('game-board', className)}>
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className="border border-gray-300"
+      />
+    </div>
+  )
+}
+```
+
+#### Component Naming
+```typescript
+// ✅ Good - PascalCase for components
+export function GameCanvas() { }
+export function ScoreDisplay() { }
+export function LeaderboardEntry() { }
+
+// ✅ Good - Descriptive prop names
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'danger'
+  size: 'sm' | 'md' | 'lg'
+  isLoading?: boolean
+  isDisabled?: boolean
+}
+
+// ❌ Avoid - Generic or unclear names
+export function Component1() { }
+interface Props {
+  data: any
+  onClick: () => void
+}
+```
+
+### Styling Conventions
+
+#### Tailwind CSS Usage
+```typescript
+// ✅ Good - Semantic class grouping
+<button className="
+  px-4 py-2 
+  bg-blue-600 hover:bg-blue-700 
+  text-white font-medium 
+  rounded-lg shadow-sm 
+  transition-colors duration-200
+  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+  disabled:opacity-50 disabled:cursor-not-allowed
+">
+  Start Game
+</button>
+
+// ✅ Good - Use cn() utility for conditional classes
+import { cn } from '@/lib/utils'
+
+<div className={cn(
+  'game-cell',
+  isSnakeHead && 'bg-green-500',
+  isSnakeBody && 'bg-green-400',
+  isFood && 'bg-red-500'
+)}>
+```
+
+#### Custom CSS (when needed)
+```css
+/* ✅ Good - BEM methodology for custom styles */
+.game-board {
+  @apply relative overflow-hidden;
+}
+
+.game-board__cell {
+  @apply absolute transition-colors duration-100;
+}
+
+.game-board__cell--snake-head {
+  @apply bg-green-500 rounded-sm;
+}
+
+/* ✅ Good - CSS custom properties for theming */
+:root {
+  --game-primary: theme('colors.green.500');
+  --game-secondary: theme('colors.blue.500');
+  --game-accent: theme('colors.yellow.400');
+}
+```
+
+### State Management Patterns
+
+#### Zustand Store Structure
+```typescript
+// ✅ Good - Separate stores by domain
+interface GameStore {
+  // State
+  gameState: GameState
+  settings: GameSettings
+  
+  // Actions grouped by functionality
+  gameActions: {
+    startGame: () => void
+    pauseGame: () => void
+    endGame: () => void
+    resetGame: () => void
+  }
+  
+  // Computed values
+  computed: {
+    canMove: boolean
+    currentLevel: number
+    timeRemaining: number
+  }
+}
+
+// ✅ Good - Use immer for complex state updates
+import { produce } from 'immer'
+
+const useGameStore = create<GameStore>((set, get) => ({
+  gameState: initialGameState,
+  
+  gameActions: {
+    moveSnake: (direction: Direction) => set(
+      produce((state) => {
+        state.gameState.snake = moveSnakeInDirection(state.gameState.snake, direction)
+        state.gameState.score += calculateMoveScore()
+      })
+    )
+  }
+}))
+```
+
+## File Structure
+
+### Project Organization
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Route groups
+│   │   ├── login/
+│   │   └── register/
+│   ├── game/
+│   │   ├── page.tsx              # Game page
+│   │   ├── loading.tsx           # Loading UI
+│   │   └── error.tsx             # Error UI
+│   ├── api/                      # API routes
+│   │   ├── scores/
+│   │   │   └── route.ts
+│   │   └── leaderboard/
+│   │       └── route.ts
+│   ├── globals.css               # Global styles
+│   ├── layout.tsx                # Root layout
+│   └── page.tsx                  # Home page
+├── components/                   # Reusable components
+│   ├── ui/                       # Base UI components
+│   │   ├── button.tsx
+│   │   ├── input.tsx
+│   │   ├── modal.tsx
+│   │   └── index.ts              # Barrel exports
+│   ├── game/                     # Game-specific components
+│   │   ├── GameCanvas.tsx
+│   │   ├── GameControls.tsx
+│   │   ├── ScoreDisplay.tsx
+│   │   └── index.ts
+│   ├── layout/                   # Layout components
+│   │   ├── Header.tsx
+│   │   ├── Navigation.tsx
+│   │   └── Footer.tsx
+│   └── common/                   # Common components
+│       ├── LoadingSpinner.tsx
+│       ├── ErrorBoundary.tsx
+│       └── SEOHead.tsx
+├── lib/                          # Utility libraries
+│   ├── game-engine/              # Core game logic
+│   │   ├── GameEngine.ts
+│   │   ├── Snake.ts
+│   │   ├── Food.ts
+│   │   ├── CollisionDetector.ts
+│   │   └── index.ts
+│   ├── stores/                   # Zustand stores
+│   │   ├── gameStore.ts
+│   │   ├── uiStore.ts
+│   │   ├── userStore.ts
+│   │   └── index.ts
+│   ├── hooks/                    # Custom React hooks
+│   │   ├── useGameLoop.ts
+│   │   ├── useKeyboardControls.ts
+│   │   ├── useLocalStorage.ts
+│   │   └── index.ts
+│   ├── utils/                    # Helper functions
+│   │   ├── cn.ts                 # Class name utility
+│   │   ├── gameUtils.ts
+│   │   ├── scoreUtils.ts
+│   │   └── index.ts
+│   ├── constants/                # App constants
+│   │   ├── gameConstants.ts
+│   │   ├── uiConstants.ts
+│   │   └── index.ts
+│   ├── types/                    # Shared type definitions
+│   │   ├── game.ts
+│   │   ├── user.ts
+│   │   ├── api.ts
+│   │   └── index.ts
+│   └── api/                      # API client functions
+│       ├── scores.ts
+│       ├── leaderboard.ts
+│       └── index.ts
+├── public/                       # Static assets
+│   ├── icons/                    # App icons
+│   ├── sounds/                   # Audio files
+│   ├── images/                   # Game assets
+│   └── manifest.json             # PWA manifest
+└── __tests__/                    # Test files
+    ├── components/
+    ├── lib/
+    ├── pages/
+    └── __mocks__/
+```
+
+### File Naming Conventions
+
+#### Components
+```
+// ✅ Good - PascalCase for component files
+GameCanvas.tsx
+ScoreDisplay.tsx
+LeaderboardEntry.tsx
+
+// ✅ Good - Use index.ts for barrel exports
+components/ui/index.ts:
+export { Button } from './button'
+export { Input } from './input'
+export { Modal } from './modal'
+```
+
+#### Utilities and Hooks
+```
+// ✅ Good - camelCase for utility files
+gameUtils.ts
+scoreCalculator.ts
+apiClient.ts
+
+// ✅ Good - Use 'use' prefix for custom hooks
+useGameLoop.ts
+useKeyboardControls.ts
+useLocalStorage.ts
+```
+
+#### Constants and Types
+```
+// ✅ Good - Descriptive names for constants
+gameConstants.ts
+apiEndpoints.ts
+themeConfig.ts
+
+// ✅ Good - Singular names for type files
+game.ts (contains GameState, GameMode, etc.)
+user.ts (contains User, UserPreferences, etc.)
+```
+
+## Testing Requirements
+
+### Testing Strategy
+- **Unit Tests**: All utility functions and custom hooks
+- **Component Tests**: All UI components with React Testing Library
+- **Integration Tests**: API routes and database operations
+- **E2E Tests**: Critical user journeys with Playwright
+- **Performance Tests**: Game loop performance and memory usage
+
+### Unit Testing Standards
+
+#### Test File Structure
+```typescript
+// __tests__/lib/gameUtils.test.ts
+import { calculateScore, isValidMove, detectCollision } from '@/lib/utils/gameUtils'
+
+describe('gameUtils', () => {
+  describe('calculateScore', () => {
+    test('should calculate basic score correctly', () => {
+      const result = calculateScore(5, 100)
+      expect(result).toBe(150) // 5 food * 10 + 100 time bonus
+    })
+    
+    test('should handle edge cases', () => {
+      expect(calculateScore(0, 0)).toBe(0)
+      expect(calculateScore(-1, 50)).toBe(0) // Should not allow negative
+    })
+  })
+  
+  describe('detectCollision', () => {
+    const snake = [{ x: 5, y: 5 }, { x: 4, y: 5 }]
+    
+    test('should detect wall collision', () => {
+      const position = { x: -1, y: 5 }
+      expect(detectCollision(position, snake, { width: 20, height: 20 })).toBe(true)
+    })
+    
+    test('should detect self collision', () => {
+      const position = { x: 4, y: 5 } // Same as snake body
+      expect(detectCollision(position, snake, { width: 20, height: 20 })).toBe(true)
+    })
+  })
+})
+```
+
+#### Component Testing Standards
+```typescript
+// __tests__/components/GameCanvas.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { GameCanvas } from '@/components/game/GameCanvas'
+
+describe('GameCanvas', () => {
+  const defaultProps = {
+    width: 400,
+    height: 400,
+    onGameOver: jest.fn()
+  }
+  
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+  
+  test('should render canvas with correct dimensions', () => {
+    render(<GameCanvas {...defaultProps} />)
+    
+    const canvas = screen.getByRole('img') // Canvas has img role
+    expect(canvas).toHaveAttribute('width', '400')
+    expect(canvas).toHaveAttribute('height', '400')
+  })
+  
+  test('should handle keyboard controls', () => {
+    render(<GameCanvas {...defaultProps} />)
+    
+    fireEvent.keyDown(document, { key: 'ArrowRight' })
+    // Assert game state changes
+  })
+  
+  test('should call onGameOver when game ends', async () => {
+    render(<GameCanvas {...defaultProps} />)
+    
+    // Simulate game over condition
+    // Assert onGameOver was called with correct score
+    expect(defaultProps.onGameOver).toHaveBeenCalledWith(expect.any(Number))
+  })
+})
+```
+
+### E2E Testing Standards
+
+#### Playwright Test Structure
+```typescript
+// __tests__/e2e/game-flow.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Game Flow', () => {
+  test('should complete full game session', async ({ page }) => {
+    await page.goto('/')
+    
+    // Start game
+    await page.click('[data-testid="start-game-button"]')
+    await expect(page.locator('[data-testid="game-canvas"]')).toBeVisible()
+    
+    // Play game
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.press('ArrowDown')
+    
+    // Check score updates
+    const scoreElement = page.locator('[data-testid="current-score"]')
+    await expect(scoreElement).toContainText('10')
+    
+    // Game over scenario
+    // Simulate collision or end game
+    await expect(page.locator('[data-testid="game-over-modal"]')).toBeVisible()
+    
+    // Check final score
+    const finalScore = page.locator('[data-testid="final-score"]')
+    await expect(finalScore).toContainText(/Score: \d+/)
+  })
+  
+  test('should save high score locally', async ({ page }) => {
+    await page.goto('/')
+    
+    // Complete game with score
+    // Check localStorage for saved score
+    const highScore = await page.evaluate(() => 
+      localStorage.getItem('snake-high-score')
+    )
+    expect(highScore).toBeTruthy()
+  })
+})
+```
+
+### Performance Testing Requirements
+
+#### Game Performance Tests
+```typescript
+// __tests__/performance/game-engine.test.ts
+describe('Game Engine Performance', () => {
+  test('should maintain 60fps during gameplay', async () => {
+    const canvas = document.createElement('canvas')
+    const gameEngine = new GameEngine(canvas)
+    
+    const frameCount = 60
+    let frames = 0
+    const startTime = performance.now()
+    
+    return new Promise<void>((resolve) => {
+      const testLoop = () => {
+        gameEngine.update(16.67) // 60fps
+        frames++
+        
+        if (frames >= frameCount) {
+          const endTime = performance.now()
+          const actualFPS = (frames / (endTime - startTime)) * 1000
+          expect(actualFPS).toBeGreaterThan(55) // Allow 5fps tolerance
+          resolve()
+        } else {
+          requestAnimationFrame(testLoop)
+        }
+      }
+      requestAnimationFrame(testLoop)
+    })
+  })
+  
+  test('should not have memory leaks', () => {
+    const initialMemory = performance.memory?.usedJSHeapSize || 0
+    
+    // Run 1000 game updates
+    const canvas = document.createElement('canvas')
+    const gameEngine = new GameEngine(canvas)
+    
+    for (let i = 0; i < 1000; i++) {
+      gameEngine.update(16.67)
+    }
+    
+    const finalMemory = performance.memory?.usedJSHeapSize || 0
+    const memoryIncrease = finalMemory - initialMemory
+    
+    // Memory increase should be minimal (< 1MB)
+    expect(memoryIncrease).toBeLessThan(1024 * 1024)
+  })
+})
+```
+
+## Development Workflow
+
+### Pre-commit Checks
+```json
+// package.json scripts
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint:check": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test",
+    "test:coverage": "jest --coverage",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "pre-commit": "npm run lint:check && npm run type-check && npm run test"
+  }
+}
+```
+
+### Code Quality Gates
+1. **TypeScript**: No type errors allowed
+2. **ESLint**: All linting rules must pass
+3. **Prettier**: Code must be formatted consistently
+4. **Tests**: All tests must pass with >80% coverage
+5. **Build**: Project must build successfully
+6. **Performance**: Bundle size must be <500KB gzipped
+
+### Git Commit Conventions
+```
+feat: add new game mode (timed mode)
+fix: resolve collision detection bug
+docs: update API documentation
+style: format code with prettier
+refactor: extract game logic into separate class
+test: add unit tests for score calculation
+perf: optimize canvas rendering performance
+chore: update dependencies
+```
+
+This document serves as the single source of truth for development standards and should be referenced for all code reviews and development decisions. 

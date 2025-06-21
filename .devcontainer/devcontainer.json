@@ -1,0 +1,272 @@
+{
+  "name": "Snake Web App Development",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+
+  // Features to install
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "version": "18"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "azureDnsAutoDetection": true,
+      "installDockerBuildx": true,
+      "version": "latest"
+    }
+  },
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      // Extensions for Next.js, TypeScript, and game development
+      "extensions": [
+        // Core Development
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-json",
+        
+        // React and Next.js
+        "dsznajder.es7-react-js-snippets",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "bradlc.vscode-tailwindcss",
+        
+        // TypeScript and JavaScript
+        "usernamehw.errorlens",
+        "yoavbls.pretty-ts-errors",
+        "ms-vscode.vscode-typescript-next",
+        "typescript-importer.typescript-importer",
+        
+        // Testing
+        "orta.vscode-jest",
+        "ms-playwright.playwright",
+        "hbenl.vscode-test-explorer",
+        
+        // Database and API
+        "supabase.supabase-vscode",
+        "humao.rest-client",
+        "rangav.vscode-thunder-client",
+        
+        // Git and Version Control
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        "github.copilot",
+        "github.copilot-chat",
+        
+        // Code Quality and Formatting
+        "streetsidesoftware.code-spell-checker",
+        "aaron-bond.better-comments",
+        "gruntfuggly.todo-tree",
+        "oderwat.indent-rainbow",
+        
+        // Development Tools
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        
+        // Game Development Specific
+        "ms-vscode.hexeditor",
+        "tomoki1207.pdf",
+        "ms-vscode.live-server",
+        
+        // Productivity
+        "alefragnani.bookmarks",
+        "formulahendry.code-runner",
+        "ms-vscode.notepadplusplus-keybindings",
+        "vscode-icons-team.vscode-icons"
+      ],
+
+      // VS Code settings
+      "settings": {
+        // TypeScript settings
+        "typescript.preferences.quoteStyle": "single",
+        "typescript.preferences.includePackageJsonAutoImports": "auto",
+        "typescript.suggest.autoImports": true,
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        
+        // Editor settings
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true,
+          "source.organizeImports": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.rulers": [80, 120],
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 120,
+        
+        // File associations
+        "files.associations": {
+          "*.css": "tailwindcss",
+          "*.env*": "dotenv"
+        },
+        
+        // Tailwind CSS settings
+        "tailwindCSS.includeLanguages": {
+          "typescript": "javascript",
+          "typescriptreact": "javascript"
+        },
+        "tailwindCSS.experimental.classRegex": [
+          ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+          ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ],
+        
+        // ESLint settings
+        "eslint.workingDirectories": ["./"],
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        
+        // Prettier settings
+        "prettier.configPath": "./.prettierrc",
+        "prettier.ignorePath": "./.prettierignore",
+        
+        // Jest settings
+        "jest.autoRun": "watch",
+        "jest.showCoverageOnLoad": true,
+        "jest.coverageFormatter": "GutterFormatter",
+        
+        // Git settings
+        "git.autofetch": true,
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        
+        // File explorer settings
+        "explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.patterns": {
+          "*.ts": "${capture}.js",
+          "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+          "*.jsx": "${capture}.js",
+          "*.tsx": "${capture}.ts",
+          "tsconfig.json": "tsconfig.*.json",
+          "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb",
+          ".env": ".env.*",
+          "tailwind.config.js": "tailwind.config.ts, postcss.config.js",
+          "next.config.js": "next.config.mjs, next-env.d.ts"
+        },
+        
+        // Terminal settings
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "args": ["-l"]
+          }
+        },
+        
+        // Search settings
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/bower_components": true,
+          "**/*.code-search": true,
+          "**/.next": true,
+          "**/dist": true,
+          "**/build": true,
+          "**/coverage": true,
+          "**/.nyc_output": true
+        },
+        
+        // Emmet settings
+        "emmet.includeLanguages": {
+          "typescript": "html",
+          "typescriptreact": "html",
+          "javascript": "html",
+          "javascriptreact": "html"
+        },
+        
+        // Auto save
+        "files.autoSave": "onFocusChange",
+        
+        // Workspace trust
+        "security.workspace.trust.untrustedFiles": "open"
+      }
+    }
+  },
+
+  // Forward ports for development
+  "forwardPorts": [
+    3000,  // Next.js dev server
+    3001,  // Storybook (if used)
+    5432,  // PostgreSQL
+    54321, // Supabase Studio
+    9229   // Node.js debugger
+  ],
+
+  // Port attributes
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js App",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Storybook",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "54321": {
+      "label": "Supabase Studio",
+      "onAutoForward": "notify"
+    },
+    "9229": {
+      "label": "Node Debugger",
+      "onAutoForward": "silent"
+    }
+  },
+
+  // Post-create command to set up the development environment
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+
+  // Post-start command to start services
+  "postStartCommand": "npm install && npm run dev",
+
+  // Environment variables
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "PLAYWRIGHT_BROWSERS_PATH": "/ms-playwright"
+  },
+
+  // Mount the Docker socket for Docker-in-Docker
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=snake-app-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+  ],
+
+  // Development user
+  "remoteUser": "node",
+
+  // Override the default command
+  "overrideCommand": false,
+
+  // Wait for user setup
+  "waitFor": "postCreateCommand",
+
+  // Update remote user UID/GID
+  "updateRemoteUserUID": true
+} 
