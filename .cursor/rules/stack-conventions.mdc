@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # Stack Conventions - Snake Web App
 
 ## Stack Choices
