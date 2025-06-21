@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --game-primary: theme('colors.green.500');
+  --game-secondary: theme('colors.blue.500');
+  --game-accent: theme('colors.yellow.400');
+}
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .game-board {
+    @apply relative overflow-hidden;
+  }
+
+  .game-board__cell {
+    @apply absolute transition-colors duration-100;
+  }
+
+  .game-board__cell--snake-head {
+    @apply bg-green-500 rounded-sm;
+  }
+
+  .game-board__cell--snake-body {
+    @apply bg-green-400 rounded-sm;
+  }
+
+  .game-board__cell--food {
+    @apply bg-red-500 rounded-sm;
+  }
+} 
