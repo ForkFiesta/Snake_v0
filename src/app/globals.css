@@ -61,4 +61,46 @@
   .loading-spinner-lg {
     @apply w-16 h-16;
   }
+
+  /* Header component styles */
+  .header {
+    @apply bg-white shadow-sm border-b border-gray-200;
+  }
+
+  .logo {
+    @apply text-xl font-bold text-gray-900 hover:text-green-600 transition-colors duration-200;
+  }
+
+  .nav-links {
+    @apply flex items-center space-x-6;
+  }
+
+  .nav-link {
+    @apply text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 px-3 py-2 rounded-md hover:bg-gray-100;
+  }
+
+  .nav-link:focus {
+    @apply outline-none ring-2 ring-green-500 ring-offset-2;
+  }
+
+  /* Navigation component styles */
+  .navigation {
+    @apply flex items-center space-x-6;
+  }
+
+  .nav-item {
+    @apply text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 px-3 py-2 rounded-md hover:bg-gray-100;
+  }
+
+  .nav-item:focus {
+    @apply outline-none ring-2 ring-green-500 ring-offset-2;
+  }
+
+  .nav-item:hover {
+    @apply bg-gray-100;
+  }
+
+  .nav-item.active {
+    @apply text-green-600 bg-green-50;
+  }
 } 

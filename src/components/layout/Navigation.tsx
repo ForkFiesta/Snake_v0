@@ -1,12 +1,13 @@
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 interface NavigationProps {
   className?: string
 }
 
-export function Navigation({ className = '' }: NavigationProps) {
+export function Navigation({ className }: NavigationProps) {
   return (
-    <nav className={`navigation ${className}`}>
+    <nav className={cn('navigation', className)}>
       <Link href="/" className="nav-item">
         Home
       </Link>
