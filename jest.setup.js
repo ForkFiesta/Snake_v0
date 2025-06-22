@@ -10,29 +10,51 @@ global.TextDecoder = TextDecoder
 global.ReadableStream = ReadableStream
 
 // Mock NextRequest and NextResponse for API testing
-jest.mock('next/server', () => ({
-  NextRequest: jest.fn().mockImplementation((url, options = {}) => ({
-    url,
-    method: options.method || 'GET',
-    headers: new Map(Object.entries(options.headers || {})),
-    body: options.body,
-    json: jest.fn().mockImplementation(async () => {
-      if (options.body) {
-        return JSON.parse(options.body)
-      }
-      return {}
-    })
-  })),
-  NextResponse: {
-    json: jest.fn().mockImplementation((data, options = {}) => ({
-      status: options.status || 200,
-      statusText: options.statusText || 'OK',
-      headers: new Map(Object.entries(options.headers || {})),
-      ok: (options.status || 200) >= 200 && (options.status || 200) < 300,
+jest.mock('next/server', () => {
+  // Create a proper NextResponse mock
+  const createMockResponse = (data, options = {}) => {
+    const status = options?.status || 200
+    const response = {
+      status,
+      statusText: options?.statusText || 'OK',
+      headers: new Map([
+        ['content-type', 'application/json'],
+        ...Object.entries(options?.headers || {})
+      ]),
+      ok: status >= 200 && status < 300,
       json: jest.fn().mockResolvedValue(data)
-    }))
+    }
+    
+    // Add getter for headers
+    response.headers.get = jest.fn((name) => {
+      const entries = Array.from(response.headers.entries())
+      const entry = entries.find(([key]) => key.toLowerCase() === name.toLowerCase())
+      return entry ? entry[1] : null
+    })
+    
+    return response
   }
-}))
+
+  return {
+    NextRequest: jest.fn().mockImplementation((url, options = {}) => ({
+      url,
+      method: options.method || 'GET',
+      headers: new Map(Object.entries(options.headers || {})),
+      body: options.body,
+      json: jest.fn().mockImplementation(async () => {
+        if (options.body) {
+          return JSON.parse(options.body)
+        }
+        return {}
+      })
+    })),
+    NextResponse: {
+      json: jest.fn().mockImplementation((data, options = {}) => {
+        return createMockResponse(data, options)
+      })
+    }
+  }
+})
 
 // Mock Request and Response for Web API compatibility
 global.Request = class Request {
@@ -63,6 +85,20 @@ global.Response = class Response {
   
   async text() {
     return this.body
+  }
+  
+  // Add static json method that NextResponse uses
+  static json(data, options = {}) {
+    const status = options?.status || 200
+    const response = new Response(JSON.stringify(data), {
+      status,
+      statusText: options?.statusText || 'OK',
+      headers: {
+        'content-type': 'application/json',
+        ...options?.headers
+      }
+    })
+    return response
   }
 }
 
