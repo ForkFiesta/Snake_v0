@@ -103,4 +103,29 @@
   .nav-item.active {
     @apply text-green-600 bg-green-50;
   }
+
+  /* Modal component styles */
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm;
+  }
+
+  .modal-content {
+    @apply relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden;
+  }
+
+  .modal-title {
+    @apply text-lg font-semibold text-gray-900 px-6 py-4 border-b border-gray-200;
+  }
+
+  .modal-body {
+    @apply px-6 py-4 overflow-y-auto max-h-[calc(90vh-8rem)];
+  }
+
+  .modal-close {
+    @apply absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+
+  .modal-close:hover {
+    @apply bg-gray-100;
+  }
 } 

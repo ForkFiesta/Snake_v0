@@ -1,6 +1,75 @@
 // Jest DOM matchers
 import '@testing-library/jest-dom'
 
+// Polyfill Web APIs for Node.js environment
+import { TextEncoder, TextDecoder } from 'util'
+import { ReadableStream } from 'stream/web'
+
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+global.ReadableStream = ReadableStream
+
+// Mock NextRequest and NextResponse for API testing
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn().mockImplementation((url, options = {}) => ({
+    url,
+    method: options.method || 'GET',
+    headers: new Map(Object.entries(options.headers || {})),
+    body: options.body,
+    json: jest.fn().mockImplementation(async () => {
+      if (options.body) {
+        return JSON.parse(options.body)
+      }
+      return {}
+    })
+  })),
+  NextResponse: {
+    json: jest.fn().mockImplementation((data, options = {}) => ({
+      status: options.status || 200,
+      statusText: options.statusText || 'OK',
+      headers: new Map(Object.entries(options.headers || {})),
+      ok: (options.status || 200) >= 200 && (options.status || 200) < 300,
+      json: jest.fn().mockResolvedValue(data)
+    }))
+  }
+}))
+
+// Mock Request and Response for Web API compatibility
+global.Request = class Request {
+  constructor(url, options = {}) {
+    Object.defineProperty(this, 'url', { value: url, writable: false })
+    this.method = options.method || 'GET'
+    this.headers = new Map(Object.entries(options.headers || {}))
+    this.body = options.body
+  }
+  
+  async json() {
+    return JSON.parse(this.body)
+  }
+}
+
+global.Response = class Response {
+  constructor(body, options = {}) {
+    this.body = body
+    this.status = options.status || 200
+    this.statusText = options.statusText || 'OK'
+    this.headers = new Map(Object.entries(options.headers || {}))
+    this.ok = this.status >= 200 && this.status < 300
+  }
+  
+  async json() {
+    return JSON.parse(this.body)
+  }
+  
+  async text() {
+    return this.body
+  }
+}
+
+// Mock URL and URLSearchParams
+global.URL = URL
+global.URLSearchParams = URLSearchParams
+
 // Mock Next.js router
 jest.mock('next/router', () => ({
   useRouter() {
