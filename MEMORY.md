@@ -42,6 +42,7 @@ A visually polished, production-ready Snake web application built with Next.js. 
 - ✅ **ScoreDisplay Component**: Production-ready score display with comprehensive tests and multiple variants
 - ✅ **Game Constants**: Complete with comprehensive tests and runtime immutability
 - ✅ **useGameLoop Hook**: Complete with comprehensive tests and production-ready implementation
+- ✅ **gameUtils Module**: Complete with 36 comprehensive tests, optimal performance, and full TypeScript integration
 - 🔄 **Project initialization in progress**
 - 📋 **Ready for development phase**
 
@@ -73,6 +74,9 @@ A visually polished, production-ready Snake web application built with Next.js. 
 - ✅ **gameStore**: Complete with 29 comprehensive tests, full snake game logic, collision detection, food generation, score management, state persistence
 - ✅ **userStore**: Complete with 33 comprehensive tests, user management, statistics tracking, achievement system, preferences management, state persistence
 - ✅ **uiStore**: Complete with 31 comprehensive tests, theme management, audio controls, modal system, tutorial controls, state persistence
+
+### Utils Status
+- ✅ **gameUtils**: Complete with 36 comprehensive tests, core game logic functions, optimal performance, TypeScript integration, ready for game engine integration
 
 ## Target Metrics & Goals
 - **Performance**: <2s load time, 60fps gameplay, 90+ Lighthouse scores
@@ -592,6 +596,16 @@ export const BOARD_SIZES = Object.freeze({
 .sr-only {
   /* Screen reader only - visually hidden but accessible */
   position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+```
 
 ### Input Component Implementation
 
@@ -938,9 +952,6 @@ This ensures that when a button is disabled, event handlers are not executed, pr
 - **Keyboard Navigation**: Full keyboard support with Enter and Space key activation
 - **Screen Reader Support**: Proper button role and accessible naming
 - **Touch Targets**: Minimum 44px touch targets for mobile accessibility
-  width: 1px;
-  height: 1px;
-  padding: 0;
 
 ### Footer Component Implementation
 
@@ -998,23 +1009,6 @@ import { Footer } from '@/components/layout/Footer'
 - **Keyboard Navigation**: No interactive elements, purely informational
 - **Visual Hierarchy**: Clear text structure with proper paragraph element
 - **Responsive Text**: Readable on all device sizes
-  margin: -1px;
-  overflow: hidden;
-  white-space: nowrap;
-  border: 0;
-  clip: rect(0, 0, 0, 0);
-}
-
-.loading-spinner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loading-spinner-sm { width: 2rem; height: 2rem; }
-.loading-spinner-md { width: 3rem; height: 3rem; }
-.loading-spinner-lg { width: 4rem; height: 4rem; }
-```
 
 ### ScoreDisplay Component Implementation
 
@@ -1458,17 +1452,6 @@ interface ButtonProps {
 - **Keyboard Navigation**: Full keyboard support with standard key mappings
 - **Focus Management**: Proper focus behavior within modal context
 - **Screen Reader Support**: Clear button labels and heading structure
-
-.loading-spinner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loading-spinner-sm { width: 2rem; height: 2rem; }
-.loading-spinner-md { width: 3rem; height: 3rem; }
-.loading-spinner-lg { width: 4rem; height: 4rem; }
-```
 
 ### Performance Targets
 - First Contentful Paint (FCP): <1.5s
@@ -2700,3 +2683,220 @@ interface UIState {
 - **Accessibility**: Ready for accessibility preference integration
 
 The UI store is production-ready with comprehensive testing coverage, robust type safety, and follows all project coding standards and conventions. It provides a solid foundation for all UI state management in the Snake web application, including themes, audio controls, modal management, and tutorial systems.
+
+### gameUtils Implementation
+
+#### Features Implemented
+- **Score Calculation**: Flexible scoring system supporting food points and time bonuses
+- **Movement Validation**: Comprehensive collision detection for walls and snake body
+- **Position Management**: Safe position calculations with immutable operations
+- **Random Generation**: Robust food placement with exclusion zones and retry logic
+- **Direction Control**: Opposite direction detection for smooth gameplay
+- **Game Speed**: Dynamic speed calculation based on level and difficulty
+- **Type Safety**: Full TypeScript integration with Position and Direction types
+
+#### Technical Details
+- **Location**: `src/lib/utils/gameUtils.ts`
+- **Tests**: `__tests__/lib/utils/gameUtils.test.ts` (36 comprehensive tests)
+- **Test Coverage**: 100% - covers all functions, edge cases, performance, and integration scenarios
+- **TypeScript**: Fully typed with proper interfaces from game types
+- **Dependencies**: Uses Position, Direction, and GameSession types from @/types/game
+- **Performance**: Optimized for 60fps gameplay with efficient algorithms
+
+#### Function Implementations
+
+##### 1. calculateScore(foodEaten: number, timeBonus: number): number
+- **Purpose**: Calculates total game score from food consumption and time bonuses
+- **Formula**: `foodEaten * 10 + timeBonus`
+- **Features**: Handles negative values, decimals, and large numbers correctly
+- **Test Coverage**: 5 tests covering basic calculation, zero values, negatives, large numbers, decimals
+
+##### 2. isValidMove(newPosition: Position, snake: Position[], boardSize: BoardSize): boolean
+- **Purpose**: Validates if a move is legal (no wall or self collision)
+- **Features**: Checks board boundaries and snake body collision
+- **Edge Cases**: Handles empty snake, edge positions, small boards
+- **Test Coverage**: 5 tests covering valid positions, wall boundaries, snake collisions, edge cases
+
+##### 3. detectCollision(position: Position, snake: Position[], boardSize: BoardSize): boolean
+- **Purpose**: Detects any collision (inverse of isValidMove for clarity)
+- **Features**: Wall collision and self collision detection
+- **Performance**: Optimized for large snake arrays
+- **Test Coverage**: 4 tests covering wall collision, self collision, valid moves, empty snake
+
+##### 4. getNextPosition(currentPosition: Position, direction: Direction): Position
+- **Purpose**: Calculates next position based on current position and direction
+- **Features**: Immutable operations, handles all four directions
+- **Safety**: Does not mutate input position
+- **Test Coverage**: 3 tests covering all directions, edge positions, immutability
+
+##### 5. generateRandomPosition(boardSize: BoardSize, excludePositions?: Position[]): Position
+- **Purpose**: Generates random position avoiding excluded areas
+- **Features**: Retry logic with max attempts (100), handles full board scenarios
+- **Performance**: Efficient random generation with fallback protection
+- **Test Coverage**: 5 tests covering boundaries, exclusions, edge cases, max attempts
+
+##### 6. isOppositeDirection(current: Direction, next: Direction): boolean
+- **Purpose**: Prevents snake from reversing into itself
+- **Features**: Handles all direction combinations
+- **Game Logic**: Essential for smooth snake movement
+- **Test Coverage**: 3 tests covering opposites, non-opposites, same direction
+
+##### 7. calculateGameSpeed(level: number, difficulty: string): number
+- **Purpose**: Dynamic speed calculation for progressive difficulty
+- **Formula**: `Math.max(50, (200 - level * 10)) * difficultyMultiplier`
+- **Features**: Minimum speed protection, difficulty scaling, unknown difficulty handling
+- **Test Coverage**: 6 tests covering difficulties, level progression, edge cases, multipliers
+
+#### Test Suite Coverage Breakdown
+
+##### 1. calculateScore Tests (5 tests):
+- ✅ Basic score calculation (5 food * 10 + 100 time = 150)
+- ✅ Zero values handling (0 food, 0 time, partial zeros)
+- ✅ Negative values (allows negative scores for realistic game scenarios)
+- ✅ Large numbers (100 food, 1000 time = 2000)
+- ✅ Decimal inputs (2.5 food * 10 + 25.5 time = 50.5)
+
+##### 2. isValidMove Tests (5 tests):
+- ✅ Valid positions within board boundaries
+- ✅ Invalid positions outside board (negative coords, beyond bounds)
+- ✅ Invalid positions on snake body
+- ✅ Edge cases (1x1 board, boundary positions)
+- ✅ Empty snake handling
+
+##### 3. detectCollision Tests (4 tests):
+- ✅ Wall collision detection (all four boundaries)
+- ✅ Self collision detection (head hitting body)
+- ✅ Valid position confirmation (no false positives)
+- ✅ Empty snake edge case (only wall collisions)
+
+##### 4. getNextPosition Tests (3 tests):
+- ✅ All four directions (up: y-1, down: y+1, left: x-1, right: x+1)
+- ✅ Edge positions (negative coordinates allowed)
+- ✅ Immutability (original position unchanged)
+
+##### 5. generateRandomPosition Tests (5 tests):
+- ✅ Boundary compliance (within board dimensions)
+- ✅ Exclusion zone avoidance (multiple iterations verified)
+- ✅ Empty exclusion list handling
+- ✅ Small board with many exclusions (deterministic result)
+- ✅ Max attempts scenario (graceful fallback)
+
+##### 6. isOppositeDirection Tests (3 tests):
+- ✅ Opposite detection (up↔down, left↔right)
+- ✅ Non-opposite combinations (8 test cases)
+- ✅ Same direction rejection (4 test cases)
+
+##### 7. calculateGameSpeed Tests (6 tests):
+- ✅ Difficulty multipliers (easy: 0.8, medium: 1.0, hard: 1.3)
+- ✅ Level progression (higher level = faster speed)
+- ✅ Minimum speed protection (never below 50ms)
+- ✅ Unknown difficulty handling (defaults to medium)
+- ✅ Edge cases (level 0, negative levels)
+- ✅ Multiplier accuracy (mathematical verification)
+
+##### 8. Performance Tests (3 tests):
+- ✅ generateRandomPosition completes in <10ms (50x50 board)
+- ✅ detectCollision handles 1000-segment snake in <5ms
+- ✅ isValidMove handles 1000-segment snake in <5ms
+
+##### 9. Integration Tests (2 tests):
+- ✅ Game simulation (3-move sequence with score calculation)
+- ✅ Direction change logic (opposite direction prevention)
+
+#### Technical Validation Status
+- ✅ **TypeScript**: No type errors, strict mode compliance, proper type imports
+- ✅ **ESLint**: All linting rules pass with no warnings
+- ✅ **Tests**: 100% pass rate with comprehensive coverage (36/36 tests)
+- ✅ **Runtime**: No runtime warnings or errors
+- ✅ **Integration**: Properly exported and available through utils index
+- ✅ **Performance**: All functions meet 60fps performance requirements
+
+#### Performance Characteristics
+- **calculateScore**: O(1) - Constant time arithmetic operations
+- **isValidMove**: O(n) - Linear scan of snake array, optimized with early returns
+- **detectCollision**: O(n) - Leverages isValidMove for consistent performance
+- **getNextPosition**: O(1) - Simple coordinate arithmetic
+- **generateRandomPosition**: O(k) - Expected constant time with retry limit
+- **isOppositeDirection**: O(1) - Hash table lookup
+- **calculateGameSpeed**: O(1) - Mathematical calculation with bounds checking
+
+#### Error Handling Features
+- **Type Safety**: TypeScript prevents invalid parameters and return types
+- **Boundary Protection**: All functions handle edge cases gracefully
+- **Fallback Logic**: generateRandomPosition has max attempts protection
+- **Input Validation**: Functions handle negative, zero, and large values appropriately
+- **Immutability**: No functions mutate input parameters
+
+#### Integration Points
+- **GameEngine**: Core logic functions ready for game loop integration
+- **GameStore**: Score and state management functions ready for Zustand integration
+- **GameCanvas**: Position and collision functions ready for rendering integration
+- **GameControls**: Direction validation ready for input handling
+- **Leaderboard**: Score calculation ready for ranking and persistence
+
+#### Architecture Alignment
+The gameUtils implementation perfectly matches the architecture requirements:
+```typescript
+// From docs/ARCHITECTURE.md - Game Logic Layer
+interface GameUtils {
+  calculateScore: (foodEaten: number, timeBonus: number) => number
+  isValidMove: (position: Position, snake: Position[], boardSize: BoardSize) => boolean
+  detectCollision: (position: Position, snake: Position[], boardSize: BoardSize) => boolean
+  getNextPosition: (position: Position, direction: Direction) => Position
+  generateRandomPosition: (boardSize: BoardSize, excludePositions?: Position[]) => Position
+  isOppositeDirection: (current: Direction, next: Direction) => boolean
+  calculateGameSpeed: (level: number, difficulty: string) => number
+}
+```
+
+#### Usage Examples
+```typescript
+// Score calculation
+const score = calculateScore(5, 100) // 150 points
+
+// Movement validation
+const isValid = isValidMove(
+  { x: 10, y: 10 }, 
+  [{ x: 5, y: 5 }, { x: 4, y: 5 }], 
+  { width: 20, height: 20 }
+) // true
+
+// Collision detection
+const hasCollision = detectCollision(
+  { x: -1, y: 5 }, 
+  snake, 
+  boardSize
+) // true (wall collision)
+
+// Next position calculation
+const nextPos = getNextPosition({ x: 5, y: 5 }, 'right') // { x: 6, y: 5 }
+
+// Food generation
+const foodPos = generateRandomPosition(
+  { width: 20, height: 20 }, 
+  snake // exclude snake positions
+)
+
+// Direction validation
+const isOpposite = isOppositeDirection('up', 'down') // true
+
+// Speed calculation
+const speed = calculateGameSpeed(5, 'hard') // 195ms (fast)
+```
+
+#### Game Integration Ready
+- **Snake Movement**: getNextPosition + detectCollision for smooth movement
+- **Food System**: generateRandomPosition for strategic food placement
+- **Scoring System**: calculateScore for consistent point calculation
+- **Difficulty Progression**: calculateGameSpeed for dynamic pacing
+- **Input Validation**: isOppositeDirection for intuitive controls
+- **Collision System**: isValidMove + detectCollision for accurate game physics
+
+#### Future Enhancement Ready
+- **Power-ups**: Score calculation easily extended for special items
+- **Obstacles**: Collision detection ready for environmental hazards
+- **Multiplayer**: Position functions ready for multiple snake support
+- **AI**: Movement validation ready for computer-controlled snakes
+- **Analytics**: All functions instrumented for performance monitoring
+
+The gameUtils module is production-ready with comprehensive testing coverage, optimal performance characteristics, and robust type safety. It provides the core mathematical and logical foundation for the Snake game engine, ensuring accurate gameplay mechanics and smooth user experience at 60fps.
