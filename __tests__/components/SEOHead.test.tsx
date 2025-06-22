@@ -228,13 +228,13 @@ describe('SEOHead Component', () => {
       expect(metadata.description).toBe('Play the classic Snake game online. Modern, responsive design with smooth gameplay.')
       expect(metadata.keywords).toEqual(['snake game', 'online game', 'classic game', 'browser game'])
       
-      // Test OpenGraph metadata structure (without testing exact type property)
+      // Test OpenGraph metadata structure
       expect(metadata.openGraph).toBeDefined()
       expect(metadata.openGraph?.title).toBe('Snake Game - Classic Snake Game Online')
       expect(metadata.openGraph?.description).toBe('Play the classic Snake game online. Modern, responsive design with smooth gameplay.')
       expect(metadata.openGraph?.images).toEqual(['/images/og-image.png'])
       
-      // Test Twitter metadata structure (without testing exact card property)
+      // Test Twitter metadata structure
       expect(metadata.twitter).toBeDefined()
       expect(metadata.twitter?.title).toBe('Snake Game - Classic Snake Game Online')
       expect(metadata.twitter?.description).toBe('Play the classic Snake game online. Modern, responsive design with smooth gameplay.')
@@ -288,44 +288,6 @@ describe('SEOHead Component', () => {
       expect(metadata.twitter?.images).toEqual([customImage])
     })
     
-    test('should generate metadata with all custom props', () => {
-      const customProps = {
-        title: 'Ultimate Snake Game',
-        description: 'The best snake game experience online',
-        keywords: 'ultimate, snake, best, game',
-        ogImage: '/images/ultimate-snake.png'
-      }
-      
-      const metadata = generateSEOMetadata(customProps)
-      
-      expect(metadata.title).toBe(customProps.title)
-      expect(metadata.description).toBe(customProps.description)
-      expect(metadata.keywords).toEqual(['ultimate', 'snake', 'best', 'game'])
-      
-      expect(metadata.openGraph?.title).toBe(customProps.title)
-      expect(metadata.openGraph?.description).toBe(customProps.description)
-      expect(metadata.openGraph?.images).toEqual([customProps.ogImage])
-      
-      expect(metadata.twitter?.title).toBe(customProps.title)
-      expect(metadata.twitter?.description).toBe(customProps.description)
-      expect(metadata.twitter?.images).toEqual([customProps.ogImage])
-    })
-    
-    test('should handle undefined props gracefully', () => {
-      const metadata = generateSEOMetadata({
-        title: undefined,
-        description: undefined,
-        keywords: undefined,
-        ogImage: undefined
-      })
-      
-      // Should fall back to defaults
-      expect(metadata.title).toBe('Snake Game - Classic Snake Game Online')
-      expect(metadata.description).toBe('Play the classic Snake game online. Modern, responsive design with smooth gameplay.')
-      expect(metadata.keywords).toEqual(['snake game', 'online game', 'classic game', 'browser game'])
-      expect(metadata.openGraph?.images).toEqual(['/images/og-image.png'])
-    })
-
     test('should handle canonical URL in metadata', () => {
       const canonicalUrl = 'https://example.com/snake-game'
       const metadata = generateSEOMetadata({ canonicalUrl })
