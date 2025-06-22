@@ -1,5 +1,11 @@
 import { create } from 'zustand'
 import { GameState, Direction, GameMode, Difficulty, Position } from '@/types/game'
+import { 
+  generateRandomPosition, 
+  getNextPosition, 
+  detectCollision, 
+  isOppositeDirection 
+} from '@/lib/utils/gameUtils'
 
 interface GameStore extends GameState {
   // Actions
@@ -41,29 +47,58 @@ export const useGameStore = create<GameStore>((set, get) => ({
     highScore: Math.max(state.score, state.highScore)
   })),
   
-  resetGame: () => set(initialState),
-  
-  updateScore: (points: number) => set((state) => ({
-    score: state.score + points
+  resetGame: () => set((state) => ({
+    ...initialState,
+    highScore: state.highScore // Preserve high score across resets
   })),
   
-  changeDirection: (direction: Direction) => set({ nextDirection: direction }),
+  updateScore: (points: number) => set((state) => ({
+    score: Math.max(0, state.score + points) // Prevent negative scores
+  })),
+  
+  changeDirection: (direction: Direction) => set((state) => {
+    // Don't allow opposite direction if snake has more than one segment
+    if (state.snake.length > 1 && isOppositeDirection(state.direction, direction)) {
+      return state
+    }
+    return { nextDirection: direction }
+  }),
   
   moveSnake: () => {
-    // TODO: Implement snake movement logic
-    set((state) => ({
-      direction: state.nextDirection,
-      // Snake movement logic will be implemented here
+    const state = get()
+    
+    // Update direction to next direction first
+    const newDirection = state.nextDirection
+    const head = state.snake[0]
+    const newHead = getNextPosition(head, newDirection)
+    
+    // Check for collisions
+    if (detectCollision(newHead, state.snake, state.boardSize!)) {
+      set({ gameStatus: 'gameOver', highScore: Math.max(state.score, state.highScore) })
+      return
+    }
+    
+    // Check if food is eaten
+    const foodEaten = newHead.x === state.food.x && newHead.y === state.food.y
+    
+    // Create new snake
+    const newSnake = [newHead, ...state.snake]
+    if (!foodEaten) {
+      newSnake.pop() // Remove tail if no food eaten
+    }
+    
+    // Update state
+    set((currentState) => ({
+      direction: newDirection,
+      snake: newSnake,
+      score: foodEaten ? currentState.score + 10 : currentState.score,
+      food: foodEaten ? generateRandomPosition(currentState.boardSize!, newSnake) : currentState.food
     }))
   },
   
   generateFood: () => {
-    // TODO: Implement food generation logic
-    const { boardSize } = get()
-    const newFood: Position = {
-      x: Math.floor(Math.random() * (boardSize?.width || 20)),
-      y: Math.floor(Math.random() * (boardSize?.height || 20))
-    }
+    const { boardSize, snake } = get()
+    const newFood = generateRandomPosition(boardSize!, snake)
     set({ food: newFood })
   },
   
