@@ -1,29 +1,29 @@
 import { GameMode, Difficulty, Theme } from '@/types/game'
 
-export const GAME_MODES: GameMode[] = ['classic', 'timed', 'survival', 'zen']
+export const GAME_MODES: readonly GameMode[] = Object.freeze(['classic', 'timed', 'survival', 'zen'] as const)
 
-export const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard']
+export const DIFFICULTIES: readonly Difficulty[] = Object.freeze(['easy', 'medium', 'hard'] as const)
 
-export const THEMES: Theme[] = ['classic', 'dark', 'neon', 'retro']
+export const THEMES: readonly Theme[] = Object.freeze(['classic', 'dark', 'neon', 'retro'] as const)
 
-export const BOARD_SIZES = {
-  small: { width: 15, height: 15 },
-  medium: { width: 20, height: 20 },
-  large: { width: 25, height: 25 }
-}
+export const BOARD_SIZES = Object.freeze({
+  small: Object.freeze({ width: 15, height: 15 }),
+  medium: Object.freeze({ width: 20, height: 20 }),
+  large: Object.freeze({ width: 25, height: 25 })
+} as const)
 
-export const GAME_SPEEDS = {
+export const GAME_SPEEDS = Object.freeze({
   easy: 200,
   medium: 150,
   hard: 100
-}
+} as const)
 
-export const POINTS = {
+export const POINTS = Object.freeze({
   FOOD: 10,
   POWERUP: 25,
   BONUS: 50,
   TIME_BONUS: 1
-}
+} as const)
 
 export const POWERUP_DURATION = 5000 // 5 seconds
 

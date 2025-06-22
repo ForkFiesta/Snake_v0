@@ -40,6 +40,7 @@ A visually polished, production-ready Snake web application built with Next.js. 
 - ✅ **Architecture Complete**: Technical architecture document with system design, data models, API structure
 - ✅ **ErrorBoundary Component**: Production-ready error boundary with comprehensive tests
 - ✅ **ScoreDisplay Component**: Production-ready score display with comprehensive tests and multiple variants
+- ✅ **Game Constants**: Complete with comprehensive tests and runtime immutability
 - 🔄 **Project initialization in progress**
 - 📋 **Ready for development phase**
 
@@ -196,6 +197,136 @@ A visually polished, production-ready Snake web application built with Next.js. 
 - **Semantic Structure**: Proper HTML semantics for assistive technologies
 
 #### CSS Classes Added
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+```
+
+### Game Constants Implementation
+
+#### Features Implemented
+- **Type Safety**: All constants properly typed with TypeScript interfaces
+- **Runtime Immutability**: Object.freeze() applied to all constants for true immutability
+- **Const Assertions**: TypeScript const assertions for compile-time type narrowing
+- **Validation**: Comprehensive relationship validation between constants
+- **Game Balance**: Carefully tuned values for optimal gameplay experience
+- **Extensibility**: Structured to support easy addition of new game modes and features
+
+#### Technical Details
+- **Location**: `src/lib/constants/gameConstants.ts`
+- **Tests**: `__tests__/lib/constants/gameConstants.test.ts` (61 comprehensive tests)
+- **Test Coverage**: 100% - covers all constants, relationships, immutability, type safety, and game balance
+- **TypeScript**: Fully typed with readonly arrays and const assertions
+- **Immutability**: Object.freeze() applied recursively to all objects and arrays
+- **Dependencies**: Imports types from `@/types/game` for type consistency
+
+#### Constants Implemented
+- **GAME_MODES**: `['classic', 'timed', 'survival', 'zen']` - frozen readonly array
+- **DIFFICULTIES**: `['easy', 'medium', 'hard']` - frozen readonly array with ascending difficulty
+- **THEMES**: `['classic', 'dark', 'neon', 'retro']` - frozen readonly array with classic as default
+- **BOARD_SIZES**: Three sizes (small: 15x15, medium: 20x20, large: 25x25) - deeply frozen objects
+- **GAME_SPEEDS**: Difficulty-mapped speeds (easy: 200ms, medium: 150ms, hard: 100ms) - frozen object
+- **POINTS**: Scoring system (FOOD: 10, POWERUP: 25, BONUS: 50, TIME_BONUS: 1) - frozen object
+- **POWERUP_DURATION**: 5000ms (5 seconds) - integer constant
+- **INITIAL_SNAKE_LENGTH**: 3 segments - validated against board sizes
+- **FOOD_SPAWN_DELAY**: 100ms - optimized for smooth gameplay
+- **MAX_LEVEL**: 20 levels - reasonable progression cap
+- **LEVEL_UP_THRESHOLD**: 100 points - balanced progression requirement
+
+#### Test Suite Coverage
+- **Individual Constants** (48 tests): Value validation, type checking, ranges, relationships
+- **GAME_MODES** (5 tests): Values, length, uniqueness, type matching, immutability
+- **DIFFICULTIES** (5 tests): Values, ordering, type matching, uniqueness
+- **THEMES** (5 tests): Values, type matching, uniqueness, default theme
+- **BOARD_SIZES** (7 tests): Dimensions, ascending sizes, square boards, minimum size validation
+- **GAME_SPEEDS** (6 tests): Values, difficulty mapping, descending speeds, ranges
+- **POINTS** (6 tests): Values, ascending importance, positive integers, game balance
+- **POWERUP_DURATION** (4 tests): Value, range, integer validation
+- **INITIAL_SNAKE_LENGTH** (4 tests): Value, board compatibility, positive integer
+- **FOOD_SPAWN_DELAY** (4 tests): Value, range, performance optimization
+- **MAX_LEVEL** (3 tests): Value, reasonable range, integer validation
+- **LEVEL_UP_THRESHOLD** (4 tests): Value, achievability, game balance
+- **Relationships** (5 tests): Inter-constant validation, game balance, progression logic
+- **Immutability** (3 tests): Runtime freeze validation, type safety, modification prevention
+
+#### Game Balance Considerations
+- **Difficulty Progression**: Game speeds decrease with higher difficulty (200ms → 150ms → 100ms)
+- **Scoring Balance**: Point values increase by importance (TIME_BONUS: 1 → FOOD: 10 → POWERUP: 25 → BONUS: 50)
+- **Board Scaling**: Board sizes accommodate gameplay (15x15 → 20x20 → 25x25)
+- **Progression Tuning**: Level threshold (100 points) requires ~10 food items per level
+- **Power-up Duration**: 5-second duration allows multiple game updates across all difficulties
+- **Snake Initialization**: 3-segment starting length fits comfortably on smallest board
+
+#### Usage Examples
+```typescript
+// Type-safe constant access
+const gameMode: GameMode = GAME_MODES[0] // 'classic'
+const boardSize = BOARD_SIZES.medium // { width: 20, height: 20 }
+const speed = GAME_SPEEDS[difficulty] // Type-safe difficulty mapping
+
+// Immutability protection
+GAME_MODES.push('invalid') // Throws TypeError: Cannot add property
+BOARD_SIZES.small.width = 999 // Throws TypeError: Cannot assign
+
+// Game logic integration
+const scoreIncrement = POINTS.FOOD
+const nextLevel = currentScore + LEVEL_UP_THRESHOLD
+const powerupActive = Date.now() < powerupStart + POWERUP_DURATION
+```
+
+#### Immutability Implementation
+```typescript
+// Arrays with Object.freeze() and const assertions
+export const GAME_MODES: readonly GameMode[] = Object.freeze(['classic', 'timed', 'survival', 'zen'] as const)
+
+// Nested objects with deep freezing
+export const BOARD_SIZES = Object.freeze({
+  small: Object.freeze({ width: 15, height: 15 }),
+  medium: Object.freeze({ width: 20, height: 20 }),
+  large: Object.freeze({ width: 25, height: 25 })
+} as const)
+```
+
+#### Integration Points
+- **Game Engine**: Constants used for game loop timing, board initialization, scoring
+- **UI Components**: Constants drive option rendering, theme selection, difficulty settings
+- **State Management**: Constants validate game state transitions and scoring logic
+- **API Layer**: Constants ensure consistent data validation between client and server
+- **Test Utilities**: Constants provide reliable test data and validation rules
+
+#### Performance Considerations
+- **Memory Efficiency**: Constants frozen once at module load, no runtime overhead
+- **Bundle Size**: Minimal impact due to tree-shaking and constant inlining
+- **Type Safety**: Compile-time validation prevents runtime type errors
+- **Immutability**: Runtime protection against accidental modifications
+- **Caching**: Constants can be safely cached and reused across components
+
+#### Validation Rules Implemented
+- **Type Consistency**: All constants match their TypeScript type definitions
+- **Range Validation**: Numeric constants within reasonable gameplay ranges
+- **Relationship Validation**: Inter-constant relationships maintain game balance
+- **Uniqueness**: Array constants contain only unique values
+- **Immutability**: Runtime freeze prevents accidental modifications
+- **Game Balance**: Values tuned for optimal gameplay experience and progression
+
+#### Future Extension Points
+- **New Game Modes**: Easy addition to GAME_MODES array with type safety
+- **Additional Themes**: Theme system ready for expansion
+- **Difficulty Scaling**: Speed and point systems designed for easy adjustment
+- **Board Variants**: Size system supports non-square boards if needed
+- **Power-up Types**: Point system extensible for new power-up categories
+- **Level System**: Threshold system supports dynamic level requirements
+
+### CSS Classes Added
 ```css
 .sr-only {
   /* Screen reader only - visually hidden but accessible */
