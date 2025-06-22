@@ -1,0 +1,47 @@
+{
+  "pages": {
+    "/_not-found": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/chunks/app/_not-found-904eefb9b1c176dd.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/css/b30a1a183da3d9b2.css",
+      "static/chunks/app/layout-5d60bf8db2557744.js"
+    ],
+    "/achievements/page": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/chunks/app/achievements/page-1ff37179c4c440aa.js"
+    ],
+    "/leaderboard/page": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/chunks/app/leaderboard/page-ad64bb3ef43850e3.js"
+    ],
+    "/game/page": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/chunks/app/game/page-b193f84e8a9313b5.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/chunks/app/page-3f4a58f42488e32a.js"
+    ],
+    "/settings/page": [
+      "static/chunks/webpack-986910da6c60a30d.js",
+      "static/chunks/vendors-553a68a58c10cd16.js",
+      "static/chunks/main-app-842a05d580046ba5.js",
+      "static/chunks/app/settings/page-46b255798ea21e35.js"
+    ]
+  }
+}

@@ -14,7 +14,7 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   
   // Module name mapping for absolute imports
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/lib/(.*)$': '<rootDir>/src/lib/$1',

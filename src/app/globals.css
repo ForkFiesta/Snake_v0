@@ -38,4 +38,27 @@
   .game-board__cell--food {
     @apply bg-red-500 rounded-sm;
   }
+
+  /* Screen reader only - visually hidden but accessible to screen readers */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  /* Loading spinner size variants */
+  .loading-spinner {
+    @apply inline-flex items-center justify-center;
+  }
+
+  .loading-spinner-sm {
+    @apply w-8 h-8;
+  }
+
+  .loading-spinner-md {
+    @apply w-12 h-12;
+  }
+
+  .loading-spinner-lg {
+    @apply w-16 h-16;
+  }
 } 

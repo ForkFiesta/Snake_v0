@@ -1,0 +1,13 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/api/achievements/route": "app/api/achievements/route.js",
+  "/achievements/page": "app/achievements/page.js",
+  "/leaderboard/page": "app/leaderboard/page.js",
+  "/manifest.webmanifest/route": "app/manifest.webmanifest/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/game/page": "app/game/page.js",
+  "/api/leaderboard/route": "app/api/leaderboard/route.js",
+  "/api/scores/route": "app/api/scores/route.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js"
+}

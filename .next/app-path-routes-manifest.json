@@ -1,0 +1,13 @@
+{
+  "/_not-found": "/_not-found",
+  "/api/achievements/route": "/api/achievements",
+  "/achievements/page": "/achievements",
+  "/leaderboard/page": "/leaderboard",
+  "/manifest.webmanifest/route": "/manifest.webmanifest",
+  "/api/health/route": "/api/health",
+  "/game/page": "/game",
+  "/api/leaderboard/route": "/api/leaderboard",
+  "/api/scores/route": "/api/scores",
+  "/page": "/",
+  "/settings/page": "/settings"
+}
