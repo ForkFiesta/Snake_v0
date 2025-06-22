@@ -1,27 +1,24 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, forwardRef } from 'react'
+import { cn } from '@/lib/utils/cn'
 
-interface InputProps {
-  type?: string
-  placeholder?: string
-  value?: string
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
-  className?: string
 }
 
-export function Input({ 
-  type = 'text', 
-  placeholder, 
-  value, 
-  onChange, 
-  className = '' 
-}: InputProps) {
-  return (
-    <input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className={`input ${className}`}
-    />
-  )
-} 
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ type = 'text', className, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={cn(
+          'input',
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+
+Input.displayName = 'Input' 

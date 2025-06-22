@@ -34,10 +34,22 @@ export function Button({
     lg: 'px-6 py-3 text-lg'
   }
 
+  const handleClick = () => {
+    if (!disabled && onClick) {
+      onClick()
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (!disabled && onKeyDown) {
+      onKeyDown(event)
+    }
+  }
+
   return (
     <button
-      onClick={onClick}
-      onKeyDown={onKeyDown}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
       disabled={disabled}
       className={cn(
         baseClasses,
