@@ -12,7 +12,12 @@ export function useGameLoop() {
     if (deltaTime >= 150) { // Game speed: ~150ms per frame
       // Update game state
       if (gameStore.gameStatus === 'playing') {
-        gameStore.moveSnake()
+        try {
+          gameStore.moveSnake()
+        } catch (error) {
+          // Handle errors gracefully to prevent loop crashes
+          console.error('Game loop error:', error)
+        }
       }
       lastTimeRef.current = currentTime
     }
@@ -24,7 +29,9 @@ export function useGameLoop() {
 
   const startLoop = useCallback(() => {
     if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current)
+      if (typeof cancelAnimationFrame !== 'undefined') {
+        cancelAnimationFrame(animationRef.current)
+      }
     }
     lastTimeRef.current = performance.now()
     animationRef.current = requestAnimationFrame(gameLoop)
@@ -32,7 +39,9 @@ export function useGameLoop() {
 
   const stopLoop = useCallback(() => {
     if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current)
+      if (typeof cancelAnimationFrame !== 'undefined') {
+        cancelAnimationFrame(animationRef.current)
+      }
       animationRef.current = undefined
     }
   }, [])

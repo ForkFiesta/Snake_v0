@@ -29,10 +29,24 @@ export class GameEngine {
     const centerX = Math.floor(this.boardWidth / 2)
     const centerY = Math.floor(this.boardHeight / 2)
     
+    let highScore = 0
+    try {
+      const storedHighScore = (typeof window !== 'undefined' ? window.localStorage : localStorage).getItem('snake-high-score')
+      if (storedHighScore) {
+        const parsed = parseInt(storedHighScore)
+        if (!isNaN(parsed)) {
+          highScore = parsed
+        }
+      }
+    } catch (error) {
+      // localStorage not available or error reading
+      highScore = 0
+    }
+    
     this.gameState = {
       gameStatus: 'idle',
       score: 0,
-      highScore: parseInt(localStorage.getItem('snake-high-score') || '0'),
+      highScore: highScore,
       level: 1,
       snake: [
         { x: centerX, y: centerY },
@@ -73,7 +87,8 @@ export class GameEngine {
     }
     this.gameState.gameStatus = 'playing'
     if (!this.animationId) {
-      this.gameLoop(performance.now())
+      this.lastFrameTime = performance.now()
+      this.animationId = requestAnimationFrame(this.gameLoop)
     }
   }
 
@@ -95,7 +110,11 @@ export class GameEngine {
     // Update high score
     if (this.gameState.score > this.gameState.highScore) {
       this.gameState.highScore = this.gameState.score
-      localStorage.setItem('snake-high-score', this.gameState.score.toString())
+      try {
+        (typeof window !== 'undefined' ? window.localStorage : localStorage).setItem('snake-high-score', this.gameState.score.toString())
+      } catch (error) {
+        // localStorage not available
+      }
     }
 
     // Call game over callback
@@ -118,20 +137,7 @@ export class GameEngine {
     }
   }
 
-  private update(deltaTime: number): void {
-    if (this.gameState.gameStatus !== 'playing') return
 
-    this.updateDirection()
-    this.moveSnake()
-    
-    if (this.checkCollisions()) {
-      this.endGame()
-      return
-    }
-    
-    this.checkFoodConsumption()
-    this.updateLevel()
-  }
 
   private updateDirection(): void {
     // Prevent reversing into itself
@@ -142,6 +148,7 @@ export class GameEngine {
       right: 'left'
     }
 
+    // Only apply direction change if it's not the opposite direction
     if (this.gameState.nextDirection !== oppositeDirections[this.gameState.direction]) {
       this.gameState.direction = this.gameState.nextDirection
     }
@@ -197,10 +204,8 @@ export class GameEngine {
   }
 
   private checkFoodConsumption(): void {
-    const head = this.gameState.snake[0]
-    if (head.x === this.gameState.food.x && head.y === this.gameState.food.y) {
-      this.gameState.food = this.generateRandomFood(this.gameState.snake)
-    }
+    // Food consumption is already handled in moveSnake method
+    // This method is kept for potential future enhancements
   }
 
   private updateLevel(): void {
@@ -212,12 +217,7 @@ export class GameEngine {
     }
   }
 
-  private render(): void {
-    this.clearCanvas()
-    this.drawBoard()
-    this.drawSnake()
-    this.drawFood()
-  }
+
 
   private clearCanvas(): void {
     this.ctx.fillStyle = '#000000'
@@ -314,5 +314,55 @@ export class GameEngine {
   public resetGame(): void {
     this.endGame()
     this.initializeGame()
+  }
+
+  // Public methods for testing and external control
+  public setScore(score: number): void {
+    this.gameState.score = score
+  }
+
+  public setLevel(level: number): void {
+    this.gameState.level = level
+  }
+
+  public setSnakePosition(positions: Position[]): void {
+    this.gameState.snake = [...positions]
+    // If only head is provided, add a minimal body
+    if (positions.length === 1) {
+      this.gameState.snake.push({ x: positions[0].x + 1, y: positions[0].y })
+      this.gameState.snake.push({ x: positions[0].x + 2, y: positions[0].y })
+    }
+    // Regenerate food to ensure it's not on the new snake position
+    this.gameState.food = this.generateRandomFood(this.gameState.snake)
+  }
+
+  public setFoodPosition(position: Position): void {
+    this.gameState.food = { ...position }
+  }
+
+  public getGameSpeed(): number {
+    return this.gameSpeed
+  }
+
+  public render(): void {
+    this.clearCanvas()
+    this.drawBoard()
+    this.drawSnake()
+    this.drawFood()
+  }
+
+  public update(deltaTime: number): void {
+    if (this.gameState.gameStatus !== 'playing') return
+
+    this.updateDirection()
+    this.moveSnake()
+    
+    if (this.checkCollisions()) {
+      this.endGame()
+      return
+    }
+    
+    this.checkFoodConsumption()
+    this.updateLevel()
   }
 } 
