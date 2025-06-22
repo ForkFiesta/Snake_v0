@@ -15,6 +15,11 @@ let scores: Array<{
   createdAt: Date
 }> = []
 
+// Reset function for testing (not exported as it's not a valid Route export)
+function resetScores() {
+  scores = []
+}
+
 export async function GET(): Promise<NextResponse<ApiResponse<typeof scores>>> {
   try {
     return NextResponse.json({

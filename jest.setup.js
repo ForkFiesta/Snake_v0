@@ -106,6 +106,9 @@ global.Response = class Response {
 global.URL = URL
 global.URLSearchParams = URLSearchParams
 
+// Mock fetch API
+global.fetch = jest.fn()
+
 // Mock Next.js router
 jest.mock('next/router', () => ({
   useRouter() {

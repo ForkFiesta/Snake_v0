@@ -19,6 +19,14 @@ export interface LeaderboardEntry {
   rank: number
 }
 
+export interface LeaderboardEntrySubmission {
+  userId: string
+  username: string
+  score: number
+  gameMode: GameMode
+  difficulty: Difficulty
+}
+
 export interface ScoreSubmission {
   score: number
   gameMode: GameMode

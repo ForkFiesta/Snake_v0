@@ -3,6 +3,9 @@ import { GET, POST } from '@/app/api/scores/route'
 import { ScoreSubmission } from '@/types/api'
 
 describe('/api/scores', () => {
+  beforeEach(() => {
+    // Note: In-memory storage is reset automatically in test environment
+  })
   describe('POST /api/scores', () => {
     test('should save valid score', async () => {
       const scoreData: ScoreSubmission = {

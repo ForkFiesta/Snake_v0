@@ -11,6 +11,17 @@ module.exports = {
         'game-primary': 'var(--game-primary)',
         'game-secondary': 'var(--game-secondary)',
         'game-accent': 'var(--game-accent)',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        ring: 'hsl(var(--ring))',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

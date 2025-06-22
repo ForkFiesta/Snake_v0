@@ -1,4 +1,4 @@
-import { ScoreSubmission, ApiResponse, LeaderboardEntry, LeaderboardQuery, DailyChallenge } from '@/types/api'
+import { ScoreSubmission, ApiResponse, LeaderboardEntry, LeaderboardEntrySubmission, LeaderboardQuery, DailyChallenge } from '@/types/api'
 import { Achievement } from '@/types/user'
 
 const API_BASE = '/api'
@@ -72,6 +72,35 @@ export async function getLeaderboard(query?: LeaderboardQuery): Promise<ApiRespo
     return await response.json()
   } catch (error) {
     console.error('Error fetching leaderboard:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
+  }
+}
+
+export async function submitLeaderboardEntry(entryData: LeaderboardEntrySubmission): Promise<ApiResponse<LeaderboardEntry>> {
+  try {
+    const response = await fetch(`${API_BASE}/leaderboard`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(entryData),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      return {
+        success: false,
+        error: errorData.error || 'Failed to submit leaderboard entry',
+        message: errorData.message
+      }
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error submitting leaderboard entry:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
